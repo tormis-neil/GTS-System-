@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}NwSSU Gym Tracker - About Us{% endblock %}
+
+{% block navbar %}
+<!-- Admin Navbar -->
+<label class="Navbar-holder">
+    <input class="burger-sidebar" type="checkbox">
+    <div class="toggle-sidebar">
+        <span class="top_line common"></span>
+        <span class="middle_line common"></span>
+        <span class="bottom_line common"></span>
+    </div>
+
+    <div class="side-bar">
+        <img src="{{ url_for('static', filename='images/icon-removebg.png')}}" alt="" class="Gym-logo">
+        <h1 class="side-title">NwSSU Gym</h1>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('main.index') }}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{{ url_for('main.aboutUs') }}"><i class="fas fa-info-circle"></i> About Us</a></li>
+        </ul>
+    </div>
+</label>
+{% endblock %}
+
+{% block content %}
+<div class="page about-page">
+    <div class="hero">
+        <div class="features">
+            <div class="feature">
+                <!-- ================== INTRODUCTION ================== -->
+                <section class="about-intro">
+                    <h1 class="about-title">About <span>NwSSU Gym Tracker</span></h1>
+                    <p class="about-desc">
+                        The <strong>NwSSU Gym Tracker</strong> is a digital gym management system developed to 
+                        streamline and modernize how gym operations are handled within <strong>Northwest Samar State University</strong>. 
+                        It centralizes gym-related data, simplifies administrative tasks, and provides insightful analytics 
+                        for better decision-making.
+                    </p>
+                </section>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <!-- ================== DEVELOPMENT PHASE ================== -->
+                <section class="about-dev">
+                    <h2 class="section-title"><i class="fas fa-laptop-code"></i> Development Phase</h2>
+                    <p>
+                        The system was developed as part of our <strong>BSIT project</strong> under the <strong>DevCore Team</strong>. 
+                        It went through several stages:
+                    </p>
+                    <ul class="dev-timeline">
+                        <li><strong>Phase 1:</strong> Planning & Requirement Gathering — defining gym needs and workflow.</li>
+                        <li><strong>Phase 2:</strong> System Design — creating UI mockups and database structure.</li>
+                        <li><strong>Phase 3:</strong> Backend Development — building core functionalities using Flask and SQLAlchemy.</li>
+                        <li><strong>Phase 4:</strong> Frontend Integration — developing an interactive and responsive dashboard.</li>
+                        <li><strong>Phase 5:</strong> Testing & Deployment — ensuring reliability, security, and user experience.</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <!-- ================== SYSTEM OVERVIEW ================== -->
+                <section class="about-overview">
+                    <h2 class="section-title"><i class="fas fa-database"></i> System Overview</h2>
+                    <p>
+                        The <strong>NwSSU Gym Tracker</strong> currently focuses on the <span>admin side</span> but will 
+                        expand to support both <strong>members and gym staff</strong>. It allows administrators to:
+                    </p>
+                    <div class="system-features">
+                        <div class="feature-box">
+                            <i class="fas fa-users-cog"></i>
+                            <h3>Member Management</h3>
+                            <p>Add, edit, or remove gym members with detailed record tracking.</p>
+                        </div>
+                        <div class="feature-box">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Analytics Dashboard</h3>
+                            <p>Monitor revenue, membership trends, and activity logs in real time.</p>
+                        </div>
+                        <div class="feature-box">
+                            <i class="fas fa-calendar-check"></i>
+                            <h3>Membership Monitoring</h3>
+                            <p>Track expiration dates and log renewals automatically.</p>
+                        </div>
+                        <div class="feature-box">
+                            <i class="fas fa-lock"></i>
+                            <h3>Secure Data Storage</h3>
+                            <p>All records are stored safely in the database, with proper access control.</p>
+                        </div>
+                    </div>
+                    <p class="future-note">
+                        <i class="fas fa-arrow-up"></i> Future updates will include a <strong>member portal</strong> where users can view 
+                        their workout history, membership progress, and schedule appointments.
+                    </p>
+                </section>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <!-- ================== GOALS SECTION ================== -->
+                <section class="about-goals">
+                    <h2 class="section-title"><i class="fas fa-bullseye"></i> Our Goals</h2>
+                    <div class="goals-grid">
+                        <div class="goal-item">
+                            <i class="fas fa-sync-alt"></i>
+                            <p>Automate manual gym operations to improve efficiency.</p>
+                        </div>
+                        <div class="goal-item">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>Provide visual analytics for gym performance and member data.</p>
+                        </div>
+                        <div class="goal-item">
+                            <i class="fas fa-user-shield"></i>
+                            <p>Ensure data privacy and secure handling of all user records.</p>
+                        </div>
+                        <div class="goal-item">
+                            <i class="fas fa-users"></i>
+                            <p>Enhance user experience through responsive, intuitive design.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <!-- ================== DEVELOPERS SECTION ================== -->
+                <section class="about-devs">
+                    <h2 class="section-title"><i class="fas fa-code"></i> Meet the Developers</h2>
+                    <div class="developers-container">
+                        <div class="developer-card">
+                            <img src="{{ url_for('static', filename='images/dev1.png') }}" alt="KyutaCodes" class="developer-photo">
+                            <h3 class="developer-name">KyutaCodes</h3>
+                            <p class="developer-role">Fullstack Developer</p>
+                        </div>
+                        <div class="developer-card">
+                            <img src="{{ url_for('static', filename='images/dev2.png') }}" alt="Developer Name" class="developer-photo">
+                            <h3 class="developer-name">Developer 2</h3>
+                            <p class="developer-role">Backend Developer</p>
+                        </div>
+                        <div class="developer-card">
+                            <img src="{{ url_for('static', filename='images/dev3.png') }}" alt="Developer Name" class="developer-photo">
+                            <h3 class="developer-name">Developer 3</h3>
+                            <p class="developer-role">Frontend Developer</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+
+        <!-- ================== CONTACT SECTION ================== -->
+        <section class="about-contact">
+            <h2 class="section-title"><i class="fas fa-envelope"></i> Reach Us</h2>
+            <p>If you’d like to connect with the <strong>DevCore Team</strong>, feel free to reach us at:</p>
+            <ul class="contact-list">
+                <li><i class="fas fa-envelope-open-text"></i> nwssu.devcore@gmail.com</li>
+                <li><i class="fab fa-facebook"></i> facebook.com/NwSSUDevCore</li>
+                <li><i class="fab fa-github"></i> github.com/NwSSU-DevCore</li>
+            </ul>
+        </section>
+    </div> 
+</div>
+{% endblock %}
