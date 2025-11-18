@@ -20,13 +20,18 @@ def create_app():
     from .adminAuth import admin_Auth
     from .addMember import addMember
     from .statistics import statistics
+    from .userAuth import userAuth
+    from .userRoutes import userRoutes
+
     app.register_blueprint(main)
     app.register_blueprint(admin_Auth)
     app.register_blueprint(addMember)
     app.register_blueprint(statistics)
+    app.register_blueprint(userAuth)
+    app.register_blueprint(userRoutes)
     
     with app.app_context():
-        from .models import Admin, Member, MembershipLog, GymPricing
+        from .models import Admin, Member, MembershipLog, GymPricing, Workout
         db.create_all()
         
         if not Admin.query.filter_by(username='admin').first():

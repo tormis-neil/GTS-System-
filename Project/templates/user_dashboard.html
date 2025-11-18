@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NwSSU Gym Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 { margin: 0; }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar a:hover { text-decoration: underline; }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .welcome {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .welcome h1 { color: #333; margin-bottom: 10px; }
+        .welcome p { color: #666; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+        }
+        .stat-card .label {
+            color: #999;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .status-active { color: #2ecc71; }
+        .status-expired { color: #e74c3c; }
+        .status-inactive { color: #95a5a6; }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .flash-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .flash-message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        table {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        table tr:last-child td {
+            border-bottom: none;
+        }
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simple Navbar -->
+    <div class="navbar">
+        <h2>NwSSU Gym Tracker</h2>
+        <div>
+            <span>{{ session.user_name }}</span>
+            <a href="{{ url_for('userRoutes.profile') }}">Profile</a>
+            <a href="{{ url_for('userAuth.user_logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome">
+            <h1>Welcome, {{ member.first_name }}! 👋</h1>
+            <p>Member ID: <strong>{{ member.unique_code }}</strong> | Status: <strong class="status-{{ member.status.lower() }}">{{ member.status }}</strong></p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Membership Status</h3>
+                <div class="value status-{{ member.status.lower() }}">{{ member.status }}</div>
+                <div class="label">{{ member.gym_plan }} Plan</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Days Remaining</h3>
+                <div class="value">{{ days_remaining }}</div>
+                <div class="label">Expires: {{ member.end_date.strftime('%B %d, %Y') }}</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Total Workouts</h3>
+                <div class="value">{{ total_workouts }}</div>
+                <div class="label">{{ total_hours }} hours total</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Current Streak</h3>
+                <div class="value">{{ streak }} 🔥</div>
+                <div class="label">Consecutive days</div>
+            </div>
+        </div>
+
+        <!-- Recent Workouts -->
+        <h2 style="margin-bottom: 15px; color: #333;">Recent Workouts</h2>
+        {% if recent_workouts %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Exercise Type</th>
+                    <th>Duration</th>
+                    <th>Calories</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for workout in recent_workouts %}
+                <tr>
+                    <td>{{ workout.workout_date.strftime('%b %d, %Y %I:%M %p') }}</td>
+                    <td>{{ workout.exercise_type }}</td>
+                    <td>{{ workout.duration_minutes }} minutes</td>
+                    <td>{{ workout.calories_burned or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="stat-card no-data">
+            <p>No workouts logged yet. Start tracking your fitness journey!</p>
+            <p style="margin-top: 10px;"><em>(Workout logging feature coming in Phase 1E)</em></p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
