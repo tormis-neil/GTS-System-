@@ -75,7 +75,12 @@ class Member(db.Model):
     date_registered = db.Column(db.DateTime, default=lambda: datetime.now(pytz.timezone('Asia/Manila')))
     price_paid = db.Column(db.Float, nullable=True)
 
+    # User authentication fields (for self-registered members)
+    password_hash = db.Column(db.String(200), nullable=True)  # NULL for admin-created members
+    is_self_registered = db.Column(db.Boolean, default=False)  # True if user registered themselves
+
     logs = db.relationship('MembershipLog', backref='member', lazy=True, cascade='all, delete-orphan')
+    workouts = db.relationship('Workout', backref='member', lazy=True, cascade='all, delete-orphan')
 
     # Track original type
     _original_member_type = None
@@ -134,6 +139,19 @@ class Member(db.Model):
         self.price_paid = self.get_current_price()
 
     # ========================================
+    # USER AUTHENTICATION METHODS
+    # ========================================
+    def set_password(self, password):
+        """Hash and set password for user authentication."""
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        """Verify password for user authentication."""
+        if not self.password_hash:
+            return False
+        return check_password_hash(self.password_hash, password)
+
+    # ========================================
     # AUTO STATUS CHECKER
     # ========================================
     def check_and_update_status(self):
@@ -156,9 +174,27 @@ class MembershipLog(db.Model):
 
     log_id = db.Column(db.Integer, primary_key=True)
     member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), nullable=False)
-    action_type = db.Column(db.String(50), nullable=False) 
+    action_type = db.Column(db.String(50), nullable=False)
     action_date = db.Column(db.DateTime, default=lambda: datetime.now(pytz.timezone('Asia/Manila')))
     remarks = db.Column(db.String(255))
 
     def __repr__(self):
         return f"<Log {self.action_type} for Member {self.member_id}>"
+
+# ========================================
+# WORKOUT MODEL
+# ========================================
+class Workout(db.Model):
+    __tablename__ = 'workouts'
+
+    workout_id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, db.ForeignKey('members.member_id', ondelete='CASCADE'), nullable=False)
+    workout_date = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(pytz.timezone('Asia/Manila')))
+    exercise_type = db.Column(db.String(50), nullable=False)  # Cardio, Strength, Flexibility, etc.
+    duration_minutes = db.Column(db.Integer, nullable=False)
+    calories_burned = db.Column(db.Integer, nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(pytz.timezone('Asia/Manila')))
+
+    def __repr__(self):
+        return f"<Workout {self.exercise_type} - {self.duration_minutes} min by Member {self.member_id}>"
