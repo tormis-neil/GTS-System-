@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membership - NwSSU Gym Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h2 { margin: 0; }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .navbar a:hover { text-decoration: underline; }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status-inactive {
+            background: #d6d8db;
+            color: #383d41;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .info-item {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .info-item label {
+            display: block;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .info-item .value {
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .alert {
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simple Navbar -->
+    <div class="navbar">
+        <h2>NwSSU Gym Tracker</h2>
+        <div>
+            <a href="{{ url_for('userRoutes.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('userRoutes.profile') }}">Profile</a>
+            <a href="{{ url_for('userAuth.user_logout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h1>My Membership</h1>
+            <p>Member ID: <strong>{{ member.unique_code }}</strong></p>
+            <p style="margin-top: 10px;">
+                Status: <span class="status-badge status-{{ member.status.lower() }}">{{ member.status }}</span>
+            </p>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Member Type</label>
+                    <div class="value">{{ member.member_type }}</div>
+                </div>
+                <div class="info-item">
+                    <label>Gym Plan</label>
+                    <div class="value">{{ member.gym_plan }}</div>
+                </div>
+                <div class="info-item">
+                    <label>Start Date</label>
+                    <div class="value">{{ member.start_date.strftime('%B %d, %Y') }}</div>
+                </div>
+                <div class="info-item">
+                    <label>End Date</label>
+                    <div class="value">{{ member.end_date.strftime('%B %d, %Y') }}</div>
+                </div>
+                <div class="info-item">
+                    <label>Days Remaining</label>
+                    <div class="value">{{ days_remaining }} days</div>
+                </div>
+                <div class="info-item">
+                    <label>Price Paid</label>
+                    <div class="value">₱{{ "%.2f"|format(member.price_paid or 0) }}</div>
+                </div>
+            </div>
+
+            {% if member.status == 'Expired' %}
+            <div class="alert alert-warning">
+                <strong>⚠️ Your membership has expired!</strong><br>
+                Please contact the gym admin to renew your membership.
+            </div>
+            {% elif days_remaining <= 7 %}
+            <div class="alert alert-warning">
+                <strong>⚠️ Your membership is expiring soon!</strong><br>
+                Only {{ days_remaining }} days remaining. Please contact the gym admin to extend your membership.
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <strong>✅ Your membership is active!</strong><br>
+                You have {{ days_remaining }} days remaining. Enjoy your workouts!
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h1>Need Help?</h1>
+            <p>To renew, upgrade, or modify your membership, please contact the gym administrator.</p>
+            <p style="margin-top: 10px; color: #666;">
+                <strong>Note:</strong> Membership renewals and plan changes are currently managed by admin only.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
