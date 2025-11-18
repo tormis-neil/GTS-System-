@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+<!-- User Navigation Bar (Horizontal, not hamburger) -->
+<nav class="user-navbar">
+    <div class="user-navbar-container">
+        <div class="user-navbar-left">
+            <a href="{{ url_for('main.index') }}" class="user-navbar-logo">
+                <img src="{{ url_for('static', filename='images/icon-removebg.png')}}" alt="NwSSU Logo">
+                <span>NwSSU Gym</span>
+            </a>
+
+            {% if session.user_id %}
+            <div class="user-navbar-links">
+                <a href="{{ url_for('userRoutes.dashboard') }}" class="{% if request.endpoint == 'userRoutes.dashboard' %}active{% endif %}">
+                    <i class="fas fa-gauge"></i> Dashboard
+                </a>
+                <a href="{{ url_for('userRoutes.profile') }}" class="{% if request.endpoint == 'userRoutes.profile' %}active{% endif %}">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="{{ url_for('userRoutes.membership') }}" class="{% if request.endpoint == 'userRoutes.membership' %}active{% endif %}">
+                    <i class="fas fa-id-card"></i> Membership
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="user-navbar-right">
+            {% if session.user_id %}
+                <span class="user-navbar-name">{{ session.user_name }}</span>
+                <a href="{{ url_for('userAuth.user_logout') }}" class="user-navbar-logout">
+                    <i class="fas fa-right-from-bracket"></i> Logout
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+{% endblock %}

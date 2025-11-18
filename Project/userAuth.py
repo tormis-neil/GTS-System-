@@ -181,8 +181,8 @@ def user_login():
 
         # Check if user has password (is self-registered)
         if not member.password_hash:
-            flash('This account was created by admin. Please contact admin to activate your account.', 'error')
-            return render_template('user_login.html')
+            flash('This account has not been activated yet. Please activate your account first.', 'warning')
+            return redirect(url_for('userAuth.activate_account'))
 
         # Verify password
         if not member.check_password(password):
@@ -219,3 +219,103 @@ def user_logout():
 
     flash('You have been logged out successfully.', 'success')
     return redirect(url_for('main.index'))
+
+# ========================================
+# ACCOUNT ACTIVATION (For admin-created members)
+# ========================================
+@userAuth.route('/activate-account', methods=['GET', 'POST'])
+def activate_account():
+    # If already logged in, redirect to dashboard
+    if 'user_id' in session:
+        return redirect(url_for('userRoutes.dashboard'))
+
+    if request.method == 'POST':
+        step = request.form.get('step', '1')
+
+        # Step 1: Verify email + member_id
+        if step == '1':
+            email = request.form.get('email', '').strip().lower()
+            member_id = request.form.get('member_id', '').strip().upper()
+
+            # Validation
+            if not email or not member_id:
+                flash('Email and Member ID are required.', 'error')
+                return render_template('activate_account.html', step=1)
+
+            # Find member
+            member = Member.query.filter_by(email=email, unique_code=member_id).first()
+
+            if not member:
+                flash('Invalid email or Member ID. Please check your details.', 'error')
+                return render_template('activate_account.html', step=1)
+
+            # Check if already activated
+            if member.password_hash:
+                flash('This account is already activated. Please login instead.', 'warning')
+                return redirect(url_for('userAuth.user_login'))
+
+            # Verification successful - show password form
+            return render_template('activate_account.html',
+                                 step=2,
+                                 email=email,
+                                 member_id=member_id,
+                                 member_name=f"{member.first_name} {member.last_name}")
+
+        # Step 2: Set password
+        elif step == '2':
+            email = request.form.get('email', '').strip().lower()
+            member_id = request.form.get('member_id', '').strip().upper()
+            password = request.form.get('password', '')
+            confirm_password = request.form.get('confirm_password', '')
+
+            # Validation
+            if not password or len(password) < 6:
+                flash('Password must be at least 6 characters.', 'error')
+                return render_template('activate_account.html',
+                                     step=2,
+                                     email=email,
+                                     member_id=member_id)
+
+            if password != confirm_password:
+                flash('Passwords do not match.', 'error')
+                return render_template('activate_account.html',
+                                     step=2,
+                                     email=email,
+                                     member_id=member_id)
+
+            # Find member again
+            member = Member.query.filter_by(email=email, unique_code=member_id).first()
+
+            if not member:
+                flash('Session expired. Please try again.', 'error')
+                return redirect(url_for('userAuth.activate_account'))
+
+            # Check if already activated (double-check)
+            if member.password_hash:
+                flash('This account is already activated. Please login instead.', 'warning')
+                return redirect(url_for('userAuth.user_login'))
+
+            # Set password
+            member.set_password(password)
+
+            # Create activation log
+            try:
+                log = MembershipLog(
+                    member_id=member.member_id,
+                    action_type='Account Activated',
+                    remarks=f'User activated admin-created account'
+                )
+                db.session.add(log)
+                db.session.commit()
+
+                flash(f'Account activated successfully! You can now login with your email and password.', 'success')
+                return redirect(url_for('userAuth.user_login'))
+
+            except Exception as e:
+                db.session.rollback()
+                flash('Activation failed. Please try again.', 'error')
+                print(f"Activation error: {e}")
+                return redirect(url_for('userAuth.activate_account'))
+
+    # GET request - show step 1 (email + member_id form)
+    return render_template('activate_account.html', step=1)
