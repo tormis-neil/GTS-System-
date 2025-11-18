@@ -17,9 +17,9 @@
                 Built for students & faculty, by students.
             </p>
             <div class="cta-container">
-                <button class="cta-btn primary">=====></button>
+                <a href="{{ url_for('userAuth.user_register') }}" class="cta-btn primary">Get Started</a>
+                <a href="{{ url_for('userAuth.user_login') }}" class="cta-btn secondary">Member Login</a>
                 <a href="{{ url_for('main.admin') }}" class="cta-btn admin">Admin Portal</a>
-                <a href="{{ url_for('main.aboutUs')}}" class="cta-btn secondary"><=====</a>
             </div>
         </div>
 
