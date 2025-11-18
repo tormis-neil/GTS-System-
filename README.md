@@ -64,29 +64,29 @@ pip install -r requirements.txt
 
 **Option A: Using `python` command**
 ```bash
-python run.py
+python run.py or python main.py
 ```
 
 **Option B: Using `py` command** (Windows)
 ```bash
-py run.py
+py run. or py main.py
 ```
 
 **Option C: Using `python3` command** (Linux/Mac)
 ```bash
-python3 run.py
+python3 run.py or python3 main.py
 ```
 
 **Option D: Using Flask CLI**
 ```bash
-flask run
+flask run or flask main
 ```
 
 #### 4. Access the Website
 
 Once the server is running, open your browser and navigate to:
 ```
-http://127.0.0.1:5000/
+http://127.0.0.1:5000/ or similar link
 ```
 
 ### Default Admin Credentials
